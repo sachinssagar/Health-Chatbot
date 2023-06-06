@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Helpdesk Chatbot</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Helpdesk Chatbot</h1>
+      <div id="chat" class="mt-4">
+        <div id="messages"></div>
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            id="user-input"
+            class="form-control"
+            placeholder="Type your message"
+          />
+          <button id="send" class="btn btn-primary">Send</button>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <select id="condition" class="form-select mb-3">
+              <option value="Heart disease">Heart disease</option>
+              <option value="Diabetes">Diabetes</option>
+              <option value="Asthma">Asthma</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <select id="severity" class="form-select mb-3">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    >
+      </link>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js">
+    </script>
+    <script>
+      $(document).ready(function () {
+        $("#send").click(function () {
+          var message = $("#user-input").val();
+          var condition = $("#condition").val();
+          var severity = $("#severity").val();
+
+          $("#user-input").val("");
+
+          if (message !== "") {
+            $("#messages").append("<div><b>You:</b> " + message + "</div>");
+            $.ajax({
+              url: "/chat",
+              type: "POST",
+              contentType: "application/json",
+              dataType: "json",
+              data: JSON.stringify({
+                message: message,
+                condition: condition,
+                severity: severity,
+              }),
+              success: function (data) {
+                $("#messages").append(
+                  "<div><b>Bot:</b> " + data.response + "</div>"
+                );
+                speak(data.response);
+              },
+            });
+          }
+        });
+      });
+
+      function speak(text) {
+        var msg = new SpeechSynthesisUtterance(text);
+        msg.rate = 1;
+        window.speechSynthesis.speak(msg);
+      }
+    </script>
+  </body>
+</html>
